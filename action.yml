@@ -1,0 +1,70 @@
+name: Invisible AI Injection Guard
+description: Detect content hidden from human readers in issue and pull request descriptions (a prompt-injection vector), then label, comment on or close them.
+author: dwertent
+branding:
+  icon: eye-off
+  color: red
+
+inputs:
+  github-token:
+    description: Token used to read templates and to label, comment on and close issues and pull requests.
+    default: ${{ github.token }}
+  add-label:
+    description: Add a label when hidden content is detected.
+    default: 'true'
+  label:
+    description: Name of the label to add. It is created if it does not exist.
+    default: suspicious-hidden-content
+  label-color:
+    description: Hex color used when the label is created.
+    default: b60205
+  label-description:
+    description: Description used when the label is created.
+    default: Contains content hidden from human readers
+  close:
+    description: Close the issue (as "not planned") or pull request when hidden content is detected.
+    default: 'false'
+  comment:
+    description: Post a comment that lists the findings. The comment is updated in place on later edits.
+    default: 'true'
+  show-evidence:
+    description: Include short, escaped excerpts of the hidden content in the comment.
+    default: 'true'
+  remove-label-when-clean:
+    description: Remove the label when a later edit no longer contains hidden content. Closed items are not reopened.
+    default: 'true'
+  min-severity:
+    description: Lowest severity that triggers the configured actions (low, medium or high).
+    default: medium
+  ignore-template-comments:
+    description: Ignore HTML and Markdown comments that also appear in the repository's issue or pull request templates.
+    default: 'true'
+  max-blank-lines:
+    description: Number of consecutive visually empty lines allowed before more content is reported as padding.
+    default: '30'
+  max-comment-length:
+    description: HTML comments longer than this many characters are reported as medium severity instead of low.
+    default: '200'
+  exempt-users:
+    description: Comma- or newline-separated logins whose issues and pull requests are not scanned.
+    default: ''
+  exempt-author-associations:
+    description: Comma-separated author associations that are not scanned, for example "OWNER,MEMBER".
+    default: ''
+  fail-on-detection:
+    description: Fail the workflow step when hidden content is detected.
+    default: 'false'
+
+outputs:
+  detected:
+    description: '"true" when at least one finding meets min-severity, otherwise "false".'
+  count:
+    description: Number of findings at or above min-severity.
+  max-severity:
+    description: Highest severity found (low, medium, high), or "none".
+  findings:
+    description: JSON array of findings with rule, severity, message, field, line, column and escaped evidence.
+
+runs:
+  using: node24
+  main: dist/index.js

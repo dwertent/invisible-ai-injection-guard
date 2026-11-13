@@ -1,0 +1,30 @@
+name: Self-test
+
+# Runs the action from this repository against its own issues and pull requests.
+on:
+  issues:
+    types: [opened, edited, reopened]
+  pull_request_target:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks out the base branch (never the pull request head) to use the action from this repository.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: guard
+        uses: ./
+      - name: Show outputs
+        env:
+          DETECTED: ${{ steps.guard.outputs.detected }}
+          COUNT: ${{ steps.guard.outputs.count }}
+          MAX_SEVERITY: ${{ steps.guard.outputs.max-severity }}
+        run: echo "detected=$DETECTED count=$COUNT max-severity=$MAX_SEVERITY"
