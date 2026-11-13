@@ -1,0 +1,54 @@
+{
+  "name": "invisible-ai-injection-guard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub Action that detects content hidden from human readers (invisible Unicode, HTML comments, hidden markup) in issue and pull request descriptions, a common prompt-injection vector.",
+  "type": "module",
+  "license": "MIT",
+  "author": "dwertent",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dwertent/invisible-ai-injection-guard.git"
+  },
+  "homepage": "https://github.com/dwertent/invisible-ai-injection-guard#readme",
+  "bugs": {
+    "url": "https://github.com/dwertent/invisible-ai-injection-guard/issues"
+  },
+  "keywords": [
+    "github-action",
+    "security",
+    "prompt-injection",
+    "unicode",
+    "ai-safety",
+    "issues",
+    "pull-requests"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "all": "npm run format:check && npm run lint && npm run typecheck && npm run coverage && npm run build"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.2",
+    "@vitest/coverage-v8": "^5.1.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.14.0",
+    "prettier": "^3.10.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vitest": "^5.1.0"
+  }
+}
