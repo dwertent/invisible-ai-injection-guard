@@ -22,11 +22,11 @@ export const DEFAULT_SCAN_OPTIONS: ScanOptions = {
   maxFindingsPerRule: 25
 }
 
-/** Scans one field. Titles are plain text, so only Unicode checks apply to them. */
+/** Scans one field. Titles are plain text, so only Unicode checks apply to them; bodies and comments are Markdown. */
 export function scanField(text: string, field: Field, options: ScanOptions = DEFAULT_SCAN_OPTIONS): Finding[] {
   if (text === '') return []
   const raw: DetectorFinding[] = [...detectUnicode(text)]
-  if (field === 'body') {
+  if (field !== 'title') {
     const masked = maskCode(text)
     const markup = { maxCommentLength: options.maxCommentLength, ignoredSnippets: options.ignoredSnippets }
     raw.push(
@@ -45,9 +45,10 @@ export function scanField(text: string, field: Field, options: ScanOptions = DEF
 
 export function scan(
   content: { title?: string | null; body?: string | null },
-  options: ScanOptions = DEFAULT_SCAN_OPTIONS
+  options: ScanOptions = DEFAULT_SCAN_OPTIONS,
+  bodyField: Exclude<Field, 'title'> = 'body'
 ): Finding[] {
-  return [...scanField(content.title ?? '', 'title', options), ...scanField(content.body ?? '', 'body', options)]
+  return [...scanField(content.title ?? '', 'title', options), ...scanField(content.body ?? '', bodyField, options)]
 }
 
 function cap(findings: DetectorFinding[], limit: number): DetectorFinding[] {

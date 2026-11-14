@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/dwertent/invisible-ai-injection-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/dwertent/invisible-ai-injection-guard/actions/workflows/ci.yml)
 
-A GitHub Action that detects content in issue and pull request titles and descriptions that is **hidden from
-people reading them on GitHub but fully visible to automated tools**, then labels, comments on, and/or closes the
-issue or pull request.
+A GitHub Action that detects content in issue and pull request titles, descriptions and comments that is **hidden
+from people reading them on GitHub but fully visible to automated tools**, then labels, comments on, hides and/or
+closes the issue, pull request or comment.
 
 ## Why
 
@@ -50,11 +50,17 @@ on:
     types: [opened, edited, reopened]
   pull_request_target:
     types: [opened, edited, reopened]
+  issue_comment: # comments on issues and pull requests
+    types: [created, edited]
+  pull_request_review_comment: # inline review comments
+    types: [created, edited]
+  pull_request_review: # review bodies
+    types: [submitted, edited]
 
 permissions:
   contents: read # read issue/PR templates
-  issues: write # labels and comments
-  pull-requests: write # labels, comments and closing pull requests
+  issues: write # labels, comments, hiding issue comments
+  pull-requests: write # labels, comments, closing pull requests, hiding review comments
 
 jobs:
   scan:
@@ -66,6 +72,23 @@ jobs:
 By default this adds the `suspicious-hidden-content` label and posts a comment listing the findings. The comment
 is updated in place when the description is edited, and when a later edit is clean the label is removed and the
 comment is marked as resolved.
+
+Drop any events you do not want to scan.
+
+### Comments
+
+When a comment (issue comment, pull request conversation comment, inline review comment or review body) contains
+hidden content, the action:
+
+- **hides the comment** (minimizes it as spam; set `hide-comment: false` to disable, or `hide-comment-reason` to
+  pick another reason). Review bodies cannot be hidden through the API, so they are only reported.
+- **adds the label** to the issue or pull request the comment belongs to (`add-label`).
+- **posts a report** that links to the comment, without mentioning its author (`comment`).
+- **does not close the issue or pull request** unless `close-on-comment: true`. This is deliberately separate from
+  `close`: otherwise anyone who can comment could close any open item.
+
+If the comment is later edited to remove the hidden content, its report is marked as resolved. The label stays
+(the item may have been labeled for other reasons) and the comment stays hidden until a maintainer unhides it.
 
 ### Label only, with a custom label
 
@@ -126,7 +149,10 @@ jobs:
 | `label`                      | `suspicious-hidden-content`                  | Label name. Created if it does not exist.                                                                        |
 | `label-color`                | `b60205`                                     | Hex color used when creating the label.                                                                          |
 | `label-description`          | `Contains content hidden from human readers` | Description used when creating the label.                                                                        |
-| `close`                      | `false`                                      | Close the issue (as not planned) or pull request when hidden content is detected.                                |
+| `close`                      | `false`                                      | Close the issue (as not planned) or pull request when its title or description contains hidden content.          |
+| `close-on-comment`           | `false`                                      | Also close the issue or pull request when one of its comments contains hidden content.                           |
+| `hide-comment`               | `true`                                       | Hide (minimize) comments that contain hidden content.                                                            |
+| `hide-comment-reason`        | `spam`                                       | Reason shown on hidden comments: `spam`, `abuse`, `off-topic`, `outdated`, `duplicate` or `resolved`.            |
 | `comment`                    | `true`                                       | Post (and keep updated) a comment that lists the findings.                                                       |
 | `show-evidence`              | `true`                                       | Include short, escaped excerpts of the hidden content in the comment.                                            |
 | `remove-label-when-clean`    | `true`                                       | Remove the label after a clean edit.                                                                             |
@@ -165,8 +191,11 @@ Findings are also written as workflow annotations and to the job summary.
 
 ## Limitations
 
-- Only titles and descriptions are scanned, not comments, review comments, commit messages or file contents.
-- The `edited` event only fires for title and description edits, which is what is scanned.
+- Titles, descriptions, comments, review comments and review bodies are scanned. Commit messages, file contents and
+  discussions are not.
+- Pull request reviews and review comments on pull requests **from forks** run with a read-only token (GitHub has
+  no `_target` variant for these events), so the action reports findings in the log, summary and outputs but cannot
+  label, comment on or hide them. Comments in the pull request conversation (`issue_comment`) are not affected.
 - Heuristics for "text aimed at AI tools" are English-only and can be evaded by a determined attacker. Content that
   is hidden is still reported at its base severity regardless of wording.
 - Visible text is not analyzed; a prompt injection written in plain sight is out of scope.
@@ -176,8 +205,34 @@ Findings are also written as workflow annotations and to the job summary.
 
 ```bash
 npm ci
-npm run all      # format check, lint, typecheck, tests with coverage, build
+npm run all       # format check, lint, typecheck, unit tests with coverage, build, end-to-end tests
+npm run test:e2e  # build, then run dist/index.js against every example in e2e/cases/
 ```
+
+### End-to-end examples
+
+[`e2e/cases/`](e2e/cases) holds one Markdown file per scenario: front matter that describes the event, inputs and
+expected outputs, followed by the issue, pull request or comment body. The end-to-end suite builds the action and
+runs the bundled `dist/index.js` as a separate Node.js process for each file, with a fake GitHub event and no
+network access, then checks the exit code, outputs and annotations.
+
+```markdown
+---
+event: issue_comment # issues, pull_request(_target), issue_comment, pull_request_review(_comment)
+title: Optional title
+input-min-severity: low # any action input, as input-<name>
+expect-detected: true
+expect-max-severity: high
+expect-rules: html-comment, unicode-tag
+expect-no-rules: bidi-control
+---
+
+Body text with <!-- a hidden comment --> and {TAG:smuggled text}.
+```
+
+Invisible characters are written with an escape notation so that example files stay readable and reviewable:
+`{U+200B}` (or `{U+200B*20}` to repeat), `{TAG:text}` for Unicode tag smuggling, `{VS:text}` for variation-selector
+smuggling, and `{NL*40}` for repeated newlines. See the [`e2e/run.ts`](e2e/run.ts) header for the full list of keys.
 
 `dist/index.js` is the bundled action and must be committed; CI fails if it is out of date. See
 [CONTRIBUTING.md](CONTRIBUTING.md).

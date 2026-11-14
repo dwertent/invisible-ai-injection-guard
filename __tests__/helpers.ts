@@ -82,7 +82,8 @@ export function fakeOctokit(repo: Partial<FakeRepo> = {}) {
     pulls: { update: vi.fn(() => Promise.resolve({ data: {} })) }
   }
   const paginate = vi.fn(() => Promise.resolve([...state.comments]))
-  return { octokit: { rest, paginate } as unknown as Octokit, rest, state }
+  const graphql = vi.fn(() => Promise.resolve({ minimizeComment: { minimizedComment: { isMinimized: true } } }))
+  return { octokit: { rest, paginate, graphql } as unknown as Octokit, rest, graphql, state }
 }
 
 export function fakeCore(inputs: Record<string, string> = {}) {
@@ -130,4 +131,35 @@ export function issueEvent(body: string, overrides: Record<string, unknown> = {}
 
 export function deps(context: EventContext, core: Core, octokit: Octokit): Dependencies {
   return { context, core, getOctokit: () => octokit }
+}
+
+/** An issue_comment event; pass `onPullRequest` for a comment on a pull request's conversation. */
+export function commentEvent(
+  body: string,
+  options: { action?: string; onPullRequest?: boolean; user?: Record<string, unknown>; association?: string } = {}
+): EventContext {
+  return {
+    eventName: 'issue_comment',
+    repo: { owner: 'acme', repo: 'widgets' },
+    payload: {
+      action: options.action ?? 'created',
+      issue: {
+        number: 7,
+        title: 'Widget crashes',
+        body: 'Original description',
+        state: 'open',
+        labels: [],
+        user: { login: 'reporter' },
+        ...(options.onPullRequest ? { pull_request: { url: 'https://api.github.com/x' } } : {})
+      },
+      comment: {
+        id: 555,
+        node_id: 'IC_kwDOtest',
+        html_url: 'https://github.com/acme/widgets/issues/7#issuecomment-555',
+        body,
+        author_association: options.association ?? 'NONE',
+        user: options.user ?? { login: 'commenter', type: 'User' }
+      }
+    }
+  }
 }

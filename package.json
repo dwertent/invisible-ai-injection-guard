@@ -1,8 +1,8 @@
 {
   "name": "invisible-ai-injection-guard",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "GitHub Action that detects content hidden from human readers (invisible Unicode, HTML comments, hidden markup) in issue and pull request descriptions, a common prompt-injection vector.",
+  "description": "GitHub Action that detects content hidden from humans but visible to AI agents (invisible Unicode, HTML comments, hidden markup) in issue and pull request descriptions and comments.",
   "type": "module",
   "license": "MIT",
   "author": "dwertent",
@@ -34,7 +34,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "all": "npm run format:check && npm run lint && npm run typecheck && npm run coverage && npm run build"
+    "all": "npm run format:check && npm run lint && npm run typecheck && npm run coverage && npm run test:e2e",
+    "test:e2e": "npm run build && vitest run --config vitest.e2e.config.ts"
   },
   "dependencies": {
     "@actions/core": "^3.0.1",

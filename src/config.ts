@@ -10,6 +10,9 @@ export interface Config {
   labelColor: string
   labelDescription: string
   close: boolean
+  closeOnComment: boolean
+  hideComment: boolean
+  hideCommentReason: string
   comment: boolean
   showEvidence: boolean
   removeLabelWhenClean: boolean
@@ -36,6 +39,15 @@ const AUTHOR_ASSOCIATIONS = [
   'NONE',
   'OWNER'
 ]
+
+const HIDE_REASONS: Readonly<Record<string, string>> = {
+  spam: 'SPAM',
+  abuse: 'ABUSE',
+  'off-topic': 'OFF_TOPIC',
+  outdated: 'OUTDATED',
+  duplicate: 'DUPLICATE',
+  resolved: 'RESOLVED'
+}
 
 export class ConfigError extends Error {
   override name = 'ConfigError'
@@ -83,6 +95,14 @@ export function readConfig(io: InputReader): Config {
     throw new ConfigError(`Input "label-color" must be a 6-digit hex color, got "${labelColor}".`)
   }
 
+  const hideReason = str('hide-comment-reason', 'spam').toLowerCase()
+  const hideCommentReason = HIDE_REASONS[hideReason]
+  if (hideCommentReason === undefined) {
+    throw new ConfigError(
+      `Input "hide-comment-reason" must be one of ${Object.keys(HIDE_REASONS).join(', ')}, got "${hideReason}".`
+    )
+  }
+
   const exemptAuthorAssociations = list('exempt-author-associations').map((a) => a.toUpperCase())
   const unknown = exemptAuthorAssociations.filter((a) => !AUTHOR_ASSOCIATIONS.includes(a))
   if (unknown.length > 0) {
@@ -98,6 +118,9 @@ export function readConfig(io: InputReader): Config {
     labelColor: labelColor.toLowerCase(),
     labelDescription: str('label-description', 'Contains content hidden from human readers').slice(0, 100),
     close: bool('close', false),
+    closeOnComment: bool('close-on-comment', false),
+    hideComment: bool('hide-comment', true),
+    hideCommentReason,
     comment: bool('comment', true),
     showEvidence: bool('show-evidence', true),
     removeLabelWhenClean: bool('remove-label-when-clean', true),

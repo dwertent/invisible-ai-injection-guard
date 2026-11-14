@@ -5,7 +5,15 @@ import * as github from '@actions/github'
 import type { Config } from './config.js'
 import { ConfigError, readConfig } from './config.js'
 import type { EventContext, Octokit, Target } from './github.js'
-import { addLabel, close, findReportComment, removeLabel, resolveTarget, upsertReportComment } from './github.js'
+import {
+  addLabel,
+  close,
+  findReportComment,
+  hideComment,
+  removeLabel,
+  resolveTarget,
+  upsertReportComment
+} from './github.js'
 import { buildReportComment, buildResolvedComment, formatFinding, formatLocation } from './report.js'
 import { DEFAULT_SCAN_OPTIONS, scan } from './scan.js'
 import { loadTemplateSnippets, messageOf, statusOf } from './templates.js'
@@ -61,7 +69,12 @@ async function execute(deps: Dependencies): Promise<RunResult | undefined> {
     return undefined
   }
   const { target } = resolved
-  const ref = `${target.kind === 'issue' ? 'issue' : 'pull request'} #${target.number}`
+  const isComment = target.subject.type === 'comment'
+  const item = `${target.kind === 'issue' ? 'issue' : 'pull request'} #${target.number}`
+  const ref =
+    target.subject.type === 'comment'
+      ? `${target.subject.kind.replace('_', ' ')} ${target.subject.id} on ${item}`
+      : item
 
   if (isExempt(config, target)) {
     io.info(`Skipping ${ref}: author "${target.author}" (${target.authorAssociation}) is exempt.`)
@@ -72,7 +85,8 @@ async function execute(deps: Dependencies): Promise<RunResult | undefined> {
   const octokit = deps.getOctokit(config.token)
 
   let ignoredSnippets: Set<string> = new Set()
-  if (config.ignoreTemplateComments) {
+  // Templates only seed titles and descriptions, so they are not consulted for comments.
+  if (config.ignoreTemplateComments && !isComment) {
     try {
       ignoredSnippets = await loadTemplateSnippets(octokit, target.owner, target.repo, io)
     } catch (error) {
@@ -87,7 +101,8 @@ async function execute(deps: Dependencies): Promise<RunResult | undefined> {
       maxBlankLines: config.maxBlankLines,
       maxCommentLength: config.maxCommentLength,
       ignoredSnippets
-    }
+    },
+    isComment ? 'comment' : 'body'
   )
   const findings = all.filter((f) => atLeast(f.severity, config.minSeverity))
   io.info(`Scanned ${ref}: ${all.length} finding(s), ${findings.length} at or above "${config.minSeverity}" severity.`)
@@ -121,8 +136,13 @@ async function execute(deps: Dependencies): Promise<RunResult | undefined> {
         return `added label \`${config.label}\``
       })
     }
-    if (config.close && target.state === 'open') {
-      await attempt(`close ${ref}`, async () => {
+    if (isComment && config.hideComment) {
+      await attempt('hide the comment', async () =>
+        (await hideComment(octokit, target, config.hideCommentReason)) ? 'hid the comment' : undefined
+      )
+    }
+    if ((isComment ? config.closeOnComment : config.close) && target.state === 'open') {
+      await attempt(`close ${item}`, async () => {
         await close(octokit, target)
         return `closed this ${target.kind === 'issue' ? 'issue' : 'pull request'}`
       })
@@ -135,7 +155,8 @@ async function execute(deps: Dependencies): Promise<RunResult | undefined> {
       })
     }
   } else {
-    if (config.removeLabelWhenClean && config.addLabel && target.labels.includes(config.label)) {
+    // A clean comment says nothing about the rest of the item, so only descriptions remove the label.
+    if (!isComment && config.removeLabelWhenClean && config.addLabel && target.labels.includes(config.label)) {
       await attempt(`remove label "${config.label}"`, async () =>
         (await removeLabel(octokit, target, config.label)) ? `removed label \`${config.label}\`` : undefined
       )
@@ -213,7 +234,9 @@ function explain(error: unknown, eventName: string): string {
     const hint =
       eventName === 'pull_request'
         ? ' Pull requests from forks get a read-only token under "pull_request"; use "pull_request_target" instead.'
-        : ''
+        : eventName === 'pull_request_review' || eventName === 'pull_request_review_comment'
+          ? ' Reviews on pull requests from forks only get a read-only token, so the action can report but not act on them.'
+          : ''
     return `${message}. Make sure the workflow grants "issues: write" and "pull-requests: write".${hint}`
   }
   return message

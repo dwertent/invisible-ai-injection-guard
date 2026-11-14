@@ -30,7 +30,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run coverage
-      - run: npm run build
+      - name: End-to-end tests (builds dist/ and runs it against e2e/cases)
+        run: npm run test:e2e
       - name: Check dist/ is up to date
         run: |
           if [ -n "$(git status --porcelain dist)" ]; then
@@ -40,7 +41,7 @@ jobs:
           fi
       - name: Check sources contain no invisible characters
         run: |
-          if grep -rnP '[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2069}\x{FEFF}\x{E0000}-\x{E007F}]' src __tests__ action.yml README.md; then
+          if grep -rnP '[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{2069}\x{FEFF}\x{E0000}-\x{E007F}]' src __tests__ e2e action.yml README.md; then
             echo "::error::Invisible or bidirectional characters found in sources; use code point escapes instead."
             exit 1
           fi

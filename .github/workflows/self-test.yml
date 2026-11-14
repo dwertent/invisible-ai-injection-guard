@@ -6,6 +6,12 @@ on:
     types: [opened, edited, reopened]
   pull_request_target:
     types: [opened, edited, reopened]
+  issue_comment:
+    types: [created, edited]
+  pull_request_review_comment:
+    types: [created, edited]
+  pull_request_review:
+    types: [submitted, edited]
 
 permissions:
   contents: read
@@ -16,9 +22,11 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      # Checks out the base branch (never the pull request head) to use the action from this repository.
+      # Always runs the action from the default branch. Review events would otherwise check out the pull
+      # request's merge commit, which would run code from the pull request.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
       - id: guard
         uses: ./

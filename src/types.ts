@@ -24,7 +24,7 @@ export type RuleId =
   | 'blank-line-padding'
   | 'truncated'
 
-export type Field = 'title' | 'body'
+export type Field = 'title' | 'body' | 'comment'
 
 /** A finding produced by a detector, positioned by UTF-16 offset into the scanned text. */
 export interface DetectorFinding {

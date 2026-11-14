@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-import { REPORT_MARKER } from './github.js'
+import { reportMarker } from './github.js'
 import type { Target } from './github.js'
 import type { Finding, Severity } from './types.js'
 
@@ -36,12 +36,11 @@ export interface ReportOptions {
  * never re-published in a form that a model would follow.
  */
 export function buildReportComment(target: Target, findings: Finding[], options: ReportOptions): string {
-  const noun = target.kind === 'issue' ? 'issue' : 'pull request'
   const lines = [
-    REPORT_MARKER,
+    reportMarker(target.subject),
     '### ⚠️ Hidden content detected',
     '',
-    `The title or description of this ${noun} contains content that is hidden from people reading it on GitHub ` +
+    `${describeSubject(target)} contains content that is hidden from people reading it on GitHub ` +
       'but is still visible to automated tools, including AI assistants. This is a common way to smuggle instructions ' +
       'to AI agents (prompt injection).',
     '',
@@ -63,11 +62,22 @@ export function buildReportComment(target: Target, findings: Finding[], options:
 }
 
 export function buildResolvedComment(target: Target): string {
-  const noun = target.kind === 'issue' ? 'issue' : 'pull request'
   return [
-    REPORT_MARKER,
+    reportMarker(target.subject),
     '### ✅ Hidden content no longer detected',
     '',
-    `The title and description of this ${noun} were re-scanned after an edit and no hidden content was found.`
+    `${describeSubject(target)} was re-scanned after an edit and no hidden content was found.`
   ].join('\n')
+}
+
+const COMMENT_NOUN = { issue_comment: 'comment', review_comment: 'review comment', review: 'review' } as const
+
+/** A sentence subject such as "The title or description of this issue" or "[This comment](…) by `user`". */
+export function describeSubject(target: Target): string {
+  const noun = target.kind === 'issue' ? 'issue' : 'pull request'
+  if (target.subject.type === 'description') return `The title or description of this ${noun}`
+  const what = COMMENT_NOUN[target.subject.kind]
+  const link = target.subject.url ? `[This ${what}](${target.subject.url})` : `This ${what}`
+  // The login is shown in a code span so that it does not notify the author.
+  return target.author ? `${link} by \`${target.author}\`` : link
 }

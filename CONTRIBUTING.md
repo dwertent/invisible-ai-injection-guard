@@ -1,12 +1,14 @@
 # Contributing
 
 1. Use Node.js 24 (`nvm use`), then run `npm ci`.
-2. Make your change and add tests in `__tests__/`.
-3. Run `npm run all` (format check, lint, typecheck, tests with coverage, build).
+2. Make your change and add unit tests in `__tests__/`. For a new detection or a false positive, also add an
+   example to `e2e/cases/` (see the README for the format).
+3. Run `npm run all` (format check, lint, typecheck, unit tests with coverage, build, end-to-end tests).
 4. Commit the regenerated `dist/index.js` together with your source change.
 
 Never put invisible or bidirectional characters directly in source or test files. Build them from code points
-(for example `String.fromCodePoint(0x200b)`) so reviewers can see them; CI rejects literal ones.
+(for example `String.fromCodePoint(0x200b)`, or `{U+200B}` in `e2e/cases/`) so reviewers can see them; CI rejects
+literal ones.
 
 ## Releasing
 

@@ -1014,8 +1014,8 @@ var require_util = __commonJS({
     }
     function nop() {
     }
-    function isStream(obj) {
-      return obj && typeof obj === "object" && typeof obj.pipe === "function" && typeof obj.on === "function";
+    function isStream(obj2) {
+      return obj2 && typeof obj2 === "object" && typeof obj2.pipe === "function" && typeof obj2.on === "function";
     }
     function isBlobLike(object) {
       if (object === null) {
@@ -1120,14 +1120,14 @@ var require_util = __commonJS({
       }
       return servername;
     }
-    function deepClone(obj) {
-      return JSON.parse(JSON.stringify(obj));
+    function deepClone(obj2) {
+      return JSON.parse(JSON.stringify(obj2));
     }
-    function isAsyncIterable(obj) {
-      return !!(obj != null && typeof obj[Symbol.asyncIterator] === "function");
+    function isAsyncIterable(obj2) {
+      return !!(obj2 != null && typeof obj2[Symbol.asyncIterator] === "function");
     }
-    function isIterable(obj) {
-      return !!(obj != null && (typeof obj[Symbol.iterator] === "function" || typeof obj[Symbol.asyncIterator] === "function"));
+    function isIterable(obj2) {
+      return !!(obj2 != null && (typeof obj2[Symbol.iterator] === "function" || typeof obj2[Symbol.asyncIterator] === "function"));
     }
     function bodyLength(body) {
       if (body == null) {
@@ -1174,30 +1174,30 @@ var require_util = __commonJS({
     function bufferToLowerCasedHeaderName(value) {
       return tree.lookup(value) ?? value.toString("latin1").toLowerCase();
     }
-    function parseHeaders(headers, obj) {
-      if (obj === void 0) obj = {};
+    function parseHeaders(headers, obj2) {
+      if (obj2 === void 0) obj2 = {};
       for (let i = 0; i < headers.length; i += 2) {
         const key = headerNameToString(headers[i]);
-        let val = obj[key];
+        let val = obj2[key];
         if (val) {
           if (typeof val === "string") {
             val = [val];
-            obj[key] = val;
+            obj2[key] = val;
           }
           val.push(headers[i + 1].toString("utf8"));
         } else {
           const headersValue = headers[i + 1];
           if (typeof headersValue === "string") {
-            obj[key] = headersValue;
+            obj2[key] = headersValue;
           } else {
-            obj[key] = Array.isArray(headersValue) ? headersValue.map((x) => x.toString("utf8")) : headersValue.toString("utf8");
+            obj2[key] = Array.isArray(headersValue) ? headersValue.map((x) => x.toString("utf8")) : headersValue.toString("utf8");
           }
         }
       }
-      if ("content-length" in obj && "content-disposition" in obj) {
-        obj["content-disposition"] = Buffer.from(obj["content-disposition"]).toString("latin1");
+      if ("content-length" in obj2 && "content-disposition" in obj2) {
+        obj2["content-disposition"] = Buffer.from(obj2["content-disposition"]).toString("latin1");
       }
-      return obj;
+      return obj2;
     }
     function parseRawHeaders(headers) {
       const len = headers.length;
@@ -1375,17 +1375,17 @@ var require_util = __commonJS({
         size: m[3] ? parseInt(m[3]) : null
       } : null;
     }
-    function addListener(obj, name, listener) {
-      const listeners = obj[kListeners] ??= [];
+    function addListener(obj2, name, listener) {
+      const listeners = obj2[kListeners] ??= [];
       listeners.push([name, listener]);
-      obj.on(name, listener);
-      return obj;
+      obj2.on(name, listener);
+      return obj2;
     }
-    function removeAllListeners(obj) {
-      for (const [name, listener] of obj[kListeners] ?? []) {
-        obj.removeListener(name, listener);
+    function removeAllListeners(obj2) {
+      for (const [name, listener] of obj2[kListeners] ?? []) {
+        obj2.removeListener(name, listener);
       }
-      obj[kListeners] = null;
+      obj2[kListeners] = null;
     }
     function errorRequest(client, request2, err) {
       try {
@@ -1990,11 +1990,11 @@ var require_request = __commonJS({
           } else if (typeof val[i] === "object") {
             throw new InvalidArgumentError(`invalid ${key} header`);
           } else {
-            const str = `${val[i]}`;
-            if (!isValidHeaderValue(str)) {
+            const str2 = `${val[i]}`;
+            if (!isValidHeaderValue(str2)) {
               throw new InvalidArgumentError(`invalid ${key} header`);
             }
-            arr.push(str);
+            arr.push(str2);
           }
         }
         val = arr;
@@ -2698,10 +2698,10 @@ var require_utils = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.enumToMap = void 0;
-    function enumToMap(obj) {
+    function enumToMap(obj2) {
       const res = {};
-      Object.keys(obj).forEach((key) => {
-        const value = obj[key];
+      Object.keys(obj2).forEach((key) => {
+        const value = obj2[key];
         if (typeof value === "number") {
           res[key] = value;
         }
@@ -3567,25 +3567,25 @@ var require_data_url = __commonJS({
     function isHTTPWhiteSpace(char) {
       return char === 13 || char === 10 || char === 9 || char === 32;
     }
-    function removeHTTPWhitespace(str, leading = true, trailing = true) {
-      return removeChars(str, leading, trailing, isHTTPWhiteSpace);
+    function removeHTTPWhitespace(str2, leading = true, trailing = true) {
+      return removeChars(str2, leading, trailing, isHTTPWhiteSpace);
     }
     function isASCIIWhitespace(char) {
       return char === 13 || char === 10 || char === 9 || char === 12 || char === 32;
     }
-    function removeASCIIWhitespace(str, leading = true, trailing = true) {
-      return removeChars(str, leading, trailing, isASCIIWhitespace);
+    function removeASCIIWhitespace(str2, leading = true, trailing = true) {
+      return removeChars(str2, leading, trailing, isASCIIWhitespace);
     }
-    function removeChars(str, leading, trailing, predicate) {
+    function removeChars(str2, leading, trailing, predicate) {
       let lead = 0;
-      let trail = str.length - 1;
+      let trail = str2.length - 1;
       if (leading) {
-        while (lead < str.length && predicate(str.charCodeAt(lead))) lead++;
+        while (lead < str2.length && predicate(str2.charCodeAt(lead))) lead++;
       }
       if (trailing) {
-        while (trail > 0 && predicate(str.charCodeAt(trail))) trail--;
+        while (trail > 0 && predicate(str2.charCodeAt(trail))) trail--;
       }
-      return lead === 0 && trail === str.length - 1 ? str : str.slice(lead, trail + 1);
+      return lead === 0 && trail === str2.length - 1 ? str2 : str2.slice(lead, trail + 1);
     }
     function isomorphicDecode(input) {
       const length = input.length;
@@ -5504,7 +5504,7 @@ var require_body = __commonJS({
         const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, "0")}`;
         const prefix = `--${boundary}\r
 Content-Disposition: form-data`;
-        const escape = (str) => str.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
+        const escape = (str2) => str2.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
         const normalizeLinefeeds = (value) => value.replace(/\r?\n|\r/g, "\r\n");
         const blobParts = [];
         const rn = new Uint8Array([13, 10]);
@@ -16487,9 +16487,9 @@ var require_cookies = __commonJS({
       webidl.argumentLengthCheck(arguments, 2, "setCookie");
       webidl.brandCheck(headers, Headers2, { strict: false });
       cookie = webidl.converters.Cookie(cookie);
-      const str = stringify(cookie);
-      if (str) {
-        headers.append("Set-Cookie", str);
+      const str2 = stringify(cookie);
+      if (str2) {
+        headers.append("Set-Cookie", str2);
       }
     }
     webidl.converters.DeleteCookieAttributes = webidl.dictionaryConverter([
@@ -19504,8 +19504,8 @@ var require_lib = __commonJS({
         });
       }
       postJson(requestUrl_1, obj_1) {
-        return __awaiter12(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
-          const data = JSON.stringify(obj, null, 2);
+        return __awaiter12(this, arguments, void 0, function* (requestUrl, obj2, additionalHeaders = {}) {
+          const data = JSON.stringify(obj2, null, 2);
           additionalHeaders[Headers2.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.Accept, MediaTypes2.ApplicationJson);
           additionalHeaders[Headers2.ContentType] = this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes2.ApplicationJson);
           const res = yield this.post(requestUrl, data, additionalHeaders);
@@ -19513,8 +19513,8 @@ var require_lib = __commonJS({
         });
       }
       putJson(requestUrl_1, obj_1) {
-        return __awaiter12(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
-          const data = JSON.stringify(obj, null, 2);
+        return __awaiter12(this, arguments, void 0, function* (requestUrl, obj2, additionalHeaders = {}) {
+          const data = JSON.stringify(obj2, null, 2);
           additionalHeaders[Headers2.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.Accept, MediaTypes2.ApplicationJson);
           additionalHeaders[Headers2.ContentType] = this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes2.ApplicationJson);
           const res = yield this.put(requestUrl, data, additionalHeaders);
@@ -19522,8 +19522,8 @@ var require_lib = __commonJS({
         });
       }
       patchJson(requestUrl_1, obj_1) {
-        return __awaiter12(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
-          const data = JSON.stringify(obj, null, 2);
+        return __awaiter12(this, arguments, void 0, function* (requestUrl, obj2, additionalHeaders = {}) {
+          const data = JSON.stringify(obj2, null, 2);
           additionalHeaders[Headers2.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers2.Accept, MediaTypes2.ApplicationJson);
           additionalHeaders[Headers2.ContentType] = this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes2.ApplicationJson);
           const res = yield this.patch(requestUrl, data, additionalHeaders);
@@ -19886,25 +19886,25 @@ var require_lib = __commonJS({
               }
               return value;
             }
-            let obj;
+            let obj2;
             let contents;
             try {
               contents = yield res.readBody();
               if (contents && contents.length > 0) {
                 if (options && options.deserializeDates) {
-                  obj = JSON.parse(contents, dateTimeDeserializer);
+                  obj2 = JSON.parse(contents, dateTimeDeserializer);
                 } else {
-                  obj = JSON.parse(contents);
+                  obj2 = JSON.parse(contents);
                 }
-                response.result = obj;
+                response.result = obj2;
               }
               response.headers = res.message.headers;
             } catch (err) {
             }
             if (statusCode > 299) {
               let msg;
-              if (obj && obj.message) {
-                msg = obj.message;
+              if (obj2 && obj2.message) {
+                msg = obj2.message;
               } else if (contents && contents.length > 0) {
                 msg = contents;
               } else {
@@ -19921,7 +19921,7 @@ var require_lib = __commonJS({
       }
     };
     exports.HttpClient = HttpClient3;
-    var lowercaseKeys3 = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
+    var lowercaseKeys3 = (obj2) => Object.keys(obj2).reduce((c, k) => (c[k.toLowerCase()] = obj2[k], c), {});
   }
 });
 
@@ -20354,8 +20354,8 @@ var HttpClient = class {
     });
   }
   postJson(requestUrl_1, obj_1) {
-    return __awaiter(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
-      const data = JSON.stringify(obj, null, 2);
+    return __awaiter(this, arguments, void 0, function* (requestUrl, obj2, additionalHeaders = {}) {
+      const data = JSON.stringify(obj2, null, 2);
       additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
       additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes.ApplicationJson);
       const res = yield this.post(requestUrl, data, additionalHeaders);
@@ -20363,8 +20363,8 @@ var HttpClient = class {
     });
   }
   putJson(requestUrl_1, obj_1) {
-    return __awaiter(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
-      const data = JSON.stringify(obj, null, 2);
+    return __awaiter(this, arguments, void 0, function* (requestUrl, obj2, additionalHeaders = {}) {
+      const data = JSON.stringify(obj2, null, 2);
       additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
       additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes.ApplicationJson);
       const res = yield this.put(requestUrl, data, additionalHeaders);
@@ -20372,8 +20372,8 @@ var HttpClient = class {
     });
   }
   patchJson(requestUrl_1, obj_1) {
-    return __awaiter(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
-      const data = JSON.stringify(obj, null, 2);
+    return __awaiter(this, arguments, void 0, function* (requestUrl, obj2, additionalHeaders = {}) {
+      const data = JSON.stringify(obj2, null, 2);
       additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
       additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes.ApplicationJson);
       const res = yield this.patch(requestUrl, data, additionalHeaders);
@@ -20736,25 +20736,25 @@ var HttpClient = class {
           }
           return value;
         }
-        let obj;
+        let obj2;
         let contents;
         try {
           contents = yield res.readBody();
           if (contents && contents.length > 0) {
             if (options && options.deserializeDates) {
-              obj = JSON.parse(contents, dateTimeDeserializer);
+              obj2 = JSON.parse(contents, dateTimeDeserializer);
             } else {
-              obj = JSON.parse(contents);
+              obj2 = JSON.parse(contents);
             }
-            response.result = obj;
+            response.result = obj2;
           }
           response.headers = res.message.headers;
         } catch (err) {
         }
         if (statusCode > 299) {
           let msg;
-          if (obj && obj.message) {
-            msg = obj.message;
+          if (obj2 && obj2.message) {
+            msg = obj2.message;
           } else if (contents && contents.length > 0) {
             msg = contents;
           } else {
@@ -20770,7 +20770,7 @@ var HttpClient = class {
     });
   }
 };
-var lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => (c[k.toLowerCase()] = obj[k], c), {});
+var lowercaseKeys = (obj2) => Object.keys(obj2).reduce((c, k) => (c[k.toLowerCase()] = obj2[k], c), {});
 
 // node_modules/@actions/http-client/lib/auth.js
 var __awaiter2 = function(thisArg, _arguments, P, generator) {
@@ -21563,8 +21563,8 @@ var ToolRunner = class extends events.EventEmitter {
     }
     return this.args;
   }
-  _endsWith(str, end) {
-    return str.endsWith(end);
+  _endsWith(str2, end) {
+    return str2.endsWith(end);
   }
   _isCmdFile() {
     const upperToolPath = this.toolPath.toUpperCase();
@@ -22479,13 +22479,13 @@ function mergeDeep(defaults2, options) {
   });
   return result;
 }
-function removeUndefinedProperties(obj) {
-  for (const key in obj) {
-    if (obj[key] === void 0) {
-      delete obj[key];
+function removeUndefinedProperties(obj2) {
+  for (const key in obj2) {
+    if (obj2[key] === void 0) {
+      delete obj2[key];
     }
   }
-  return obj;
+  return obj2;
 }
 function merge(defaults2, route, options) {
   if (typeof route === "string") {
@@ -22541,16 +22541,16 @@ function omit(object, keysToOmit) {
   }
   return result;
 }
-function encodeReserved(str) {
-  return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
+function encodeReserved(str2) {
+  return str2.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
     if (!/%[0-9A-Fa-f]/.test(part)) {
       part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
     }
     return part;
   }).join("");
 }
-function encodeUnreserved(str) {
-  return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+function encodeUnreserved(str2) {
+  return encodeURIComponent(str2).replace(/[!'()*]/g, function(c) {
     return "%" + c.charCodeAt(0).toString(16).toUpperCase();
   });
 }
@@ -22922,15 +22922,15 @@ function parseParameters(header, type, index, len, stopFlags) {
   }
   return { type, index, parameters };
 }
-function unescapeQuotedPairs(str, start, end) {
+function unescapeQuotedPairs(str2, start, end) {
   let result = "";
   for (let index = start; index < end; index++) {
-    if (str.charCodeAt(index) === BSLASH) {
-      result += str.slice(start, index);
+    if (str2.charCodeAt(index) === BSLASH) {
+      result += str2.slice(start, index);
       start = ++index;
     }
   }
-  return result + str.slice(start, end);
+  return result + str2.slice(start, end);
 }
 
 // node_modules/json-with-bigint/json-with-bigint.js
@@ -26392,11 +26392,19 @@ var AUTHOR_ASSOCIATIONS = [
   "NONE",
   "OWNER"
 ];
+var HIDE_REASONS = {
+  spam: "SPAM",
+  abuse: "ABUSE",
+  "off-topic": "OFF_TOPIC",
+  outdated: "OUTDATED",
+  duplicate: "DUPLICATE",
+  resolved: "RESOLVED"
+};
 var ConfigError = class extends Error {
   name = "ConfigError";
 };
 function readConfig(io) {
-  const str = (name, fallback) => {
+  const str2 = (name, fallback) => {
     const value = io.getInput(name).trim();
     return value === "" ? fallback : value;
   };
@@ -26416,15 +26424,22 @@ function readConfig(io) {
   const list = (name) => io.getInput(name).split(/[\s,]+/u).map((v) => v.trim()).filter(Boolean);
   const token = io.getInput("github-token").trim();
   if (token === "") throw new ConfigError('Input "github-token" is required.');
-  const minSeverity = str("min-severity", "medium").toLowerCase();
+  const minSeverity = str2("min-severity", "medium").toLowerCase();
   if (!SEVERITIES.includes(minSeverity)) {
     throw new ConfigError(`Input "min-severity" must be one of ${SEVERITIES.join(", ")}, got "${minSeverity}".`);
   }
-  const label = str("label", "suspicious-hidden-content");
+  const label = str2("label", "suspicious-hidden-content");
   if (label.length > 50) throw new ConfigError('Input "label" must be at most 50 characters (a GitHub limit).');
-  const labelColor = str("label-color", "b60205").replace(/^#/u, "");
+  const labelColor = str2("label-color", "b60205").replace(/^#/u, "");
   if (!/^[0-9a-f]{6}$/iu.test(labelColor)) {
     throw new ConfigError(`Input "label-color" must be a 6-digit hex color, got "${labelColor}".`);
+  }
+  const hideReason = str2("hide-comment-reason", "spam").toLowerCase();
+  const hideCommentReason = HIDE_REASONS[hideReason];
+  if (hideCommentReason === void 0) {
+    throw new ConfigError(
+      `Input "hide-comment-reason" must be one of ${Object.keys(HIDE_REASONS).join(", ")}, got "${hideReason}".`
+    );
   }
   const exemptAuthorAssociations = list("exempt-author-associations").map((a) => a.toUpperCase());
   const unknown = exemptAuthorAssociations.filter((a) => !AUTHOR_ASSOCIATIONS.includes(a));
@@ -26438,8 +26453,11 @@ function readConfig(io) {
     addLabel: bool("add-label", true),
     label,
     labelColor: labelColor.toLowerCase(),
-    labelDescription: str("label-description", "Contains content hidden from human readers").slice(0, 100),
+    labelDescription: str2("label-description", "Contains content hidden from human readers").slice(0, 100),
     close: bool("close", false),
+    closeOnComment: bool("close-on-comment", false),
+    hideComment: bool("hide-comment", true),
+    hideCommentReason,
     comment: bool("comment", true),
     showEvidence: bool("show-evidence", true),
     removeLabelWhenClean: bool("remove-label-when-clean", true),
@@ -26837,42 +26855,86 @@ function messageOf(error2) {
 
 // src/github.ts
 var REPORT_MARKER = "<!-- invisible-ai-injection-guard:report -->";
-var SUPPORTED_ACTIONS = /* @__PURE__ */ new Set(["opened", "edited", "reopened"]);
+var DESCRIPTION_ACTIONS = /* @__PURE__ */ new Set(["opened", "edited", "reopened"]);
+var COMMENT_ACTIONS = /* @__PURE__ */ new Set(["created", "edited"]);
+var EVENTS = {
+  issues: { actions: DESCRIPTION_ACTIONS, parent: "issue" },
+  pull_request: { actions: DESCRIPTION_ACTIONS, parent: "pull_request" },
+  pull_request_target: { actions: DESCRIPTION_ACTIONS, parent: "pull_request" },
+  issue_comment: { actions: COMMENT_ACTIONS, parent: "issue", comment: { key: "comment", kind: "issue_comment" } },
+  pull_request_review_comment: {
+    actions: COMMENT_ACTIONS,
+    parent: "pull_request",
+    comment: { key: "comment", kind: "review_comment" }
+  },
+  pull_request_review: {
+    actions: /* @__PURE__ */ new Set(["submitted", "edited"]),
+    parent: "pull_request",
+    comment: { key: "review", kind: "review" }
+  }
+};
+function str(record, key, fallback = "") {
+  const value = record[key];
+  return typeof value === "string" ? value : fallback;
+}
+function obj(value) {
+  return typeof value === "object" && value !== null ? value : void 0;
+}
+function reportMarker(subject) {
+  return subject.type === "description" ? REPORT_MARKER : `<!-- invisible-ai-injection-guard:report:${subject.kind}-${subject.id} -->`;
+}
 function resolveTarget(context3) {
   const { eventName, payload } = context3;
-  const action = typeof payload["action"] === "string" ? payload["action"] : "";
-  let kind;
-  let item;
-  if (eventName === "issues") {
-    kind = "issue";
-    item = payload["issue"];
-  } else if (eventName === "pull_request" || eventName === "pull_request_target") {
-    kind = "pull_request";
-    item = payload["pull_request"];
-  } else {
+  const spec = EVENTS[eventName];
+  if (!spec) {
     return {
-      skip: `Event "${eventName}" is not supported. Trigger this action on "issues", "pull_request" or "pull_request_target".`
+      skip: `Event "${eventName}" is not supported. Supported events: ${Object.keys(EVENTS).join(", ")}.`
     };
   }
-  if (!SUPPORTED_ACTIONS.has(action)) {
-    return { skip: `Event action "${action}" does not change the title or description; nothing to scan.` };
+  const action = str(payload, "action");
+  if (!spec.actions.has(action)) {
+    return { skip: `Event action "${action}" does not add or change text; nothing to scan.` };
   }
-  if (typeof item !== "object" || item === null) return { skip: `The "${eventName}" payload has no ${kind}.` };
-  const record = item;
-  const user = record["user"] ?? {};
-  const labels = Array.isArray(record["labels"]) ? record["labels"] : [];
+  const parentKey = spec.parent === "issue" ? "issue" : "pull_request";
+  const parent = obj(payload[parentKey]);
+  if (!parent) return { skip: `The "${eventName}" payload has no ${parentKey}.` };
+  const kind = spec.parent === "issue" && obj(parent["pull_request"]) ? "pull_request" : spec.parent;
+  const labels = Array.isArray(parent["labels"]) ? parent["labels"] : [];
+  const base = {
+    kind,
+    owner: context3.repo.owner,
+    repo: context3.repo.repo,
+    number: Number(parent["number"]),
+    state: str(parent, "state", "open"),
+    labels: labels.map((l) => typeof l === "string" ? l : obj(l)?.["name"]).filter((l) => typeof l === "string")
+  };
+  let source = parent;
+  let subject = { type: "description" };
+  if (spec.comment) {
+    const comment = obj(payload[spec.comment.key]);
+    if (!comment) return { skip: `The "${eventName}" payload has no ${spec.comment.key}.` };
+    source = comment;
+    subject = {
+      type: "comment",
+      kind: spec.comment.kind,
+      id: Number(comment["id"]),
+      nodeId: str(comment, "node_id"),
+      url: str(comment, "html_url")
+    };
+    const user2 = obj(comment["user"]) ?? {};
+    if (str(user2, "type") === "Bot" && str(comment, "body").includes("<!-- invisible-ai-injection-guard:report")) {
+      return { skip: "Skipping a report comment written by this action." };
+    }
+  }
+  const user = obj(source["user"]) ?? {};
   return {
     target: {
-      kind,
-      owner: context3.repo.owner,
-      repo: context3.repo.repo,
-      number: Number(record["number"]),
-      title: typeof record["title"] === "string" ? record["title"] : "",
-      body: typeof record["body"] === "string" ? record["body"] : "",
-      author: typeof user["login"] === "string" ? user["login"] : "",
-      authorAssociation: typeof record["author_association"] === "string" ? record["author_association"] : "",
-      state: typeof record["state"] === "string" ? record["state"] : "open",
-      labels: labels.map((l) => typeof l === "string" ? l : l.name).filter((l) => typeof l === "string")
+      ...base,
+      subject,
+      title: subject.type === "description" ? str(parent, "title") : "",
+      body: str(source, "body"),
+      author: str(user, "login"),
+      authorAssociation: str(source, "author_association")
     }
   };
 }
@@ -26914,13 +26976,14 @@ async function close(octokit, target) {
   }
 }
 async function findReportComment(octokit, target) {
+  const marker = reportMarker(target.subject);
   const comments = await octokit.paginate(octokit.rest.issues.listComments, {
     owner: target.owner,
     repo: target.repo,
     issue_number: target.number,
     per_page: 100
   });
-  const ours = comments.filter((c) => c.body?.includes(REPORT_MARKER) && c.user?.type === "Bot");
+  const ours = comments.filter((c) => c.body?.includes(marker) && c.user?.type === "Bot");
   return ours.at(-1)?.id;
 }
 async function upsertReportComment(octokit, target, body) {
@@ -26932,6 +26995,22 @@ async function upsertReportComment(octokit, target, body) {
   }
   await octokit.rest.issues.createComment({ owner, repo, issue_number: target.number, body });
   return "created";
+}
+var HIDE_MUTATION = `
+  mutation ($id: ID!, $classifier: ReportedContentClassifiers!) {
+    minimizeComment(input: { subjectId: $id, classifier: $classifier }) {
+      minimizedComment {
+        isMinimized
+      }
+    }
+  }
+`;
+async function hideComment(octokit, target, classifier) {
+  if (target.subject.type !== "comment" || target.subject.kind === "review" || target.subject.nodeId === "") {
+    return false;
+  }
+  await octokit.graphql(HIDE_MUTATION, { id: target.subject.nodeId, classifier });
+  return true;
 }
 
 // src/report.ts
@@ -26950,12 +27029,11 @@ function code(text) {
   return text === "" ? "" : `\`${text}\``;
 }
 function buildReportComment(target, findings, options) {
-  const noun = target.kind === "issue" ? "issue" : "pull request";
   const lines = [
-    REPORT_MARKER,
+    reportMarker(target.subject),
     "### \u26A0\uFE0F Hidden content detected",
     "",
-    `The title or description of this ${noun} contains content that is hidden from people reading it on GitHub but is still visible to automated tools, including AI assistants. This is a common way to smuggle instructions to AI agents (prompt injection).`,
+    `${describeSubject(target)} contains content that is hidden from people reading it on GitHub but is still visible to automated tools, including AI assistants. This is a common way to smuggle instructions to AI agents (prompt injection).`,
     "",
     "| Severity | Location | Rule | Details |",
     "| --- | --- | --- | --- |"
@@ -26973,13 +27051,20 @@ function buildReportComment(target, findings, options) {
   return lines.join("\n");
 }
 function buildResolvedComment(target) {
-  const noun = target.kind === "issue" ? "issue" : "pull request";
   return [
-    REPORT_MARKER,
+    reportMarker(target.subject),
     "### \u2705 Hidden content no longer detected",
     "",
-    `The title and description of this ${noun} were re-scanned after an edit and no hidden content was found.`
+    `${describeSubject(target)} was re-scanned after an edit and no hidden content was found.`
   ].join("\n");
+}
+var COMMENT_NOUN = { issue_comment: "comment", review_comment: "review comment", review: "review" };
+function describeSubject(target) {
+  const noun = target.kind === "issue" ? "issue" : "pull request";
+  if (target.subject.type === "description") return `The title or description of this ${noun}`;
+  const what = COMMENT_NOUN[target.subject.kind];
+  const link = target.subject.url ? `[This ${what}](${target.subject.url})` : `This ${what}`;
+  return target.author ? `${link} by \`${target.author}\`` : link;
 }
 
 // src/detectors/padding.ts
@@ -27222,7 +27307,7 @@ var DEFAULT_SCAN_OPTIONS = {
 function scanField(text, field, options = DEFAULT_SCAN_OPTIONS) {
   if (text === "") return [];
   const raw = [...detectUnicode(text)];
-  if (field === "body") {
+  if (field !== "title") {
     const masked = maskCode(text);
     const markup = { maxCommentLength: options.maxCommentLength, ignoredSnippets: options.ignoredSnippets };
     raw.push(
@@ -27238,8 +27323,8 @@ function scanField(text, field, options = DEFAULT_SCAN_OPTIONS) {
     return { ...rest, field, ...locate(text, index) };
   });
 }
-function scan(content, options = DEFAULT_SCAN_OPTIONS) {
-  return [...scanField(content.title ?? "", "title", options), ...scanField(content.body ?? "", "body", options)];
+function scan(content, options = DEFAULT_SCAN_OPTIONS, bodyField = "body") {
+  return [...scanField(content.title ?? "", "title", options), ...scanField(content.body ?? "", bodyField, options)];
 }
 function cap(findings, limit) {
   const kept = [];
@@ -27294,7 +27379,9 @@ async function execute(deps) {
     return void 0;
   }
   const { target } = resolved;
-  const ref = `${target.kind === "issue" ? "issue" : "pull request"} #${target.number}`;
+  const isComment = target.subject.type === "comment";
+  const item = `${target.kind === "issue" ? "issue" : "pull request"} #${target.number}`;
+  const ref = target.subject.type === "comment" ? `${target.subject.kind.replace("_", " ")} ${target.subject.id} on ${item}` : item;
   if (isExempt(config, target)) {
     io.info(`Skipping ${ref}: author "${target.author}" (${target.authorAssociation}) is exempt.`);
     setOutputs(io, []);
@@ -27302,7 +27389,7 @@ async function execute(deps) {
   }
   const octokit = deps.getOctokit(config.token);
   let ignoredSnippets = /* @__PURE__ */ new Set();
-  if (config.ignoreTemplateComments) {
+  if (config.ignoreTemplateComments && !isComment) {
     try {
       ignoredSnippets = await loadTemplateSnippets(octokit, target.owner, target.repo, io);
     } catch (error2) {
@@ -27316,7 +27403,8 @@ async function execute(deps) {
       maxBlankLines: config.maxBlankLines,
       maxCommentLength: config.maxCommentLength,
       ignoredSnippets
-    }
+    },
+    isComment ? "comment" : "body"
   );
   const findings = all.filter((f) => atLeast(f.severity, config.minSeverity));
   io.info(`Scanned ${ref}: ${all.length} finding(s), ${findings.length} at or above "${config.minSeverity}" severity.`);
@@ -27346,8 +27434,14 @@ async function execute(deps) {
         return `added label \`${config.label}\``;
       });
     }
-    if (config.close && target.state === "open") {
-      await attempt(`close ${ref}`, async () => {
+    if (isComment && config.hideComment) {
+      await attempt(
+        "hide the comment",
+        async () => await hideComment(octokit, target, config.hideCommentReason) ? "hid the comment" : void 0
+      );
+    }
+    if ((isComment ? config.closeOnComment : config.close) && target.state === "open") {
+      await attempt(`close ${item}`, async () => {
         await close(octokit, target);
         return `closed this ${target.kind === "issue" ? "issue" : "pull request"}`;
       });
@@ -27360,7 +27454,7 @@ async function execute(deps) {
       });
     }
   } else {
-    if (config.removeLabelWhenClean && config.addLabel && target.labels.includes(config.label)) {
+    if (!isComment && config.removeLabelWhenClean && config.addLabel && target.labels.includes(config.label)) {
       await attempt(
         `remove label "${config.label}"`,
         async () => await removeLabel(octokit, target, config.label) ? `removed label \`${config.label}\`` : void 0
@@ -27427,7 +27521,7 @@ function explain(error2, eventName) {
   const message = messageOf(error2);
   const status = statusOf(error2);
   if (status === 403 || status === 404) {
-    const hint = eventName === "pull_request" ? ' Pull requests from forks get a read-only token under "pull_request"; use "pull_request_target" instead.' : "";
+    const hint = eventName === "pull_request" ? ' Pull requests from forks get a read-only token under "pull_request"; use "pull_request_target" instead.' : eventName === "pull_request_review" || eventName === "pull_request_review_comment" ? " Reviews on pull requests from forks only get a read-only token, so the action can report but not act on them." : "";
     return `${message}. Make sure the workflow grants "issues: write" and "pull-requests: write".${hint}`;
   }
   return message;

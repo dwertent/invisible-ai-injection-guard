@@ -1,5 +1,5 @@
 name: Invisible AI Injection Guard
-description: Detect content hidden from human readers in issue and pull request descriptions (a prompt-injection vector), then label, comment on or close them.
+description: Detect content hidden from humans but visible to AI agents in issues, PRs and comments, then label, hide or close them.
 author: dwertent
 branding:
   icon: eye-off
@@ -24,6 +24,17 @@ inputs:
   close:
     description: Close the issue (as "not planned") or pull request when hidden content is detected.
     default: 'false'
+  close-on-comment:
+    description: >-
+      Also close the issue or pull request when a comment on it contains hidden content. Off by default because it
+      lets anyone who can comment close the item.
+    default: 'false'
+  hide-comment:
+    description: Hide (minimize) a comment that contains hidden content. Pull request reviews cannot be hidden.
+    default: 'true'
+  hide-comment-reason:
+    description: Reason shown on hidden comments (spam, abuse, off-topic, outdated, duplicate or resolved).
+    default: spam
   comment:
     description: Post a comment that lists the findings. The comment is updated in place on later edits.
     default: 'true'

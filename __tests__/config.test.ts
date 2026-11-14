@@ -15,6 +15,9 @@ describe('readConfig', () => {
       labelColor: 'b60205',
       labelDescription: 'Contains content hidden from human readers',
       close: false,
+      closeOnComment: false,
+      hideComment: true,
+      hideCommentReason: 'SPAM',
       comment: true,
       showEvidence: true,
       removeLabelWhenClean: true,
@@ -61,7 +64,8 @@ describe('readConfig', () => {
     [{ 'label-color': 'red' }, /label-color/u],
     [{ label: 'x'.repeat(51) }, /label/u],
     [{ 'max-blank-lines': '-1' }, /max-blank-lines/u],
-    [{ 'exempt-author-associations': 'ADMIN' }, /ADMIN/u]
+    [{ 'exempt-author-associations': 'ADMIN' }, /ADMIN/u],
+    [{ 'hide-comment-reason': 'rude' }, /hide-comment-reason/u]
   ])('rejects invalid input %j', (inputs, message) => {
     const token = 'github-token' in inputs || Object.keys(inputs).length === 0 ? {} : { 'github-token': 't' }
     expect(() => readConfig(reader({ ...token, ...inputs }))).toThrow(ConfigError)
