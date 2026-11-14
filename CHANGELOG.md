@@ -14,6 +14,11 @@ All notable changes to this project are documented here. This project follows
   default).
 - End-to-end suite that runs the bundled action against example files in `e2e/cases/`.
 
+### Fixed
+
+- Short Markdown link-reference comments, such as the markers in Dependabot pull request descriptions, are now low
+  severity (like short HTML comments) instead of medium, so they no longer trigger actions by default.
+
 ## [1.0.0] - 2026-11-12
 
 ### Added

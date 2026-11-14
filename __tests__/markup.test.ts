@@ -60,9 +60,13 @@ describe('detectMarkdownComments', () => {
   it('reports link-reference comments', () => {
     for (const text of ['[//]: # (secret note)', '[comment]: <> (secret note)', '[//]: # "secret note"']) {
       expect(detectMarkdownComments(text, options)).toEqual([
-        expect.objectContaining({ rule: 'markdown-comment', severity: 'medium' })
+        expect.objectContaining({ rule: 'markdown-comment', severity: 'low' })
       ])
     }
+  })
+
+  it('rates long Markdown comments as medium', () => {
+    expect(detectMarkdownComments(`[//]: # (${'x'.repeat(250)})`, options)[0]?.severity).toBe('medium')
   })
 
   it('escalates AI-directed Markdown comments', () => {

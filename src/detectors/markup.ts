@@ -114,7 +114,9 @@ export function detectMarkdownComments(masked: string, options: MarkupOptions): 
   const findings: DetectorFinding[] = []
   for (const { index, content } of extractMarkdownComments(masked)) {
     if (options.ignoredSnippets.has(normalizeSnippet(content))) continue
-    const { severity, signals } = classify(content, options, 'medium')
+    // Short notes are common (e.g. Dependabot's `[//]: # (dependabot-automerge-start)` markers),
+    // so these are rated like HTML comments.
+    const { severity, signals } = classify(content, options, 'low')
     findings.push({
       rule: 'markdown-comment',
       severity,

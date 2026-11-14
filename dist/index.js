@@ -26705,7 +26705,7 @@ function detectMarkdownComments(masked, options) {
   const findings = [];
   for (const { index, content } of extractMarkdownComments(masked)) {
     if (options.ignoredSnippets.has(normalizeSnippet(content))) continue;
-    const { severity, signals } = classify(content, options, "medium");
+    const { severity, signals } = classify(content, options, "low");
     findings.push({
       rule: "markdown-comment",
       severity,
