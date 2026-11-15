@@ -43,13 +43,17 @@ jobs:
           MAX_SEVERITY: ${{ steps.guard.outputs.max-severity }}
         run: echo "detected=$DETECTED count=$COUNT max-severity=$MAX_SEVERITY"
 
-  # Labels added with GITHUB_TOKEN do not trigger the "labeled" workflow, so the item is closed here instead.
+  # Labels added with GITHUB_TOKEN do not trigger the "labeled" event, so ask the close workflow to run.
   close:
     needs: scan
     if: needs.scan.outputs.detected == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      actions: write # start the close workflow
     steps:
-      - uses: dwertent/close-on-labels@22dbe6c77cb4a56bcda4a56357103043194fc30f # v1.0.0
-        with:
-          labels: suspicious-hidden-content
-          comment: 'Closing because this was labeled {{matched}}.'
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.repository.default_branch }}
+          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+        run: gh workflow run close-on-label.yml --ref "$BRANCH" -f number="$NUMBER"

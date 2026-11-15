@@ -1,23 +1,35 @@
 name: Close on label
 
-# Closes an issue or pull request when someone adds the label by hand. Labels added by the self-test workflow
-# use GITHUB_TOKEN and do not trigger this workflow; that workflow closes the item itself.
+# Closes an issue or pull request labeled suspicious-hidden-content.
+# - labeled: someone added a label by hand.
+# - workflow_dispatch: the self-test workflow, after the guard adds the label. Labels added with
+#   GITHUB_TOKEN do not trigger "labeled" workflows, but a dispatch does.
+# close-on-labels reads the item's current labels, so it only closes items that have the label.
 on:
   issues:
     types: [labeled]
   pull_request_target:
     types: [labeled]
+  workflow_dispatch:
+    inputs:
+      number:
+        description: Issue or pull request number
+        required: true
+        type: number
 
 permissions:
   issues: write
   pull-requests: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.number || github.event.issue.number || github.event.pull_request.number }}
+
 jobs:
   close:
-    if: github.event.label.name == 'suspicious-hidden-content'
     runs-on: ubuntu-latest
     steps:
       - uses: dwertent/close-on-labels@22dbe6c77cb4a56bcda4a56357103043194fc30f # v1.0.0
         with:
           labels: suspicious-hidden-content
+          number: ${{ inputs.number }}
           comment: 'Closing because this was labeled {{matched}}.'
