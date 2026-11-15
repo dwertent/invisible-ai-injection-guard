@@ -4,7 +4,7 @@ event: pull_request_target
 author: dependabot[bot]
 author-type: Bot
 input-min-severity: low
-input-trusted-bots: dependabot[bot]
+input-trusted-bots: - dependabot[bot]
 expect-detected: false
 ---
 

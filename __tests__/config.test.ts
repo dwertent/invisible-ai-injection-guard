@@ -58,6 +58,18 @@ describe('readConfig', () => {
     })
   })
 
+  it('reads lists one item per line, with optional "- " prefixes and commas', () => {
+    const config = readConfig(
+      reader({
+        'github-token': 't',
+        'trusted-bots': '- dependabot[bot]\n',
+        'exempt-users': '- alice\n  - Bob\ncarol, dave\n'
+      })
+    )
+    expect(config.trustedBots).toEqual(['dependabot[bot]'])
+    expect(config.exemptUsers).toEqual(['alice', 'bob', 'carol', 'dave'])
+  })
+
   it.each([
     [{}, /github-token/u],
     [{ 'add-label': 'maybe' }, /add-label/u],

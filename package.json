@@ -1,6 +1,6 @@
 {
   "name": "invisible-ai-injection-guard",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "description": "GitHub Action that detects content hidden from humans but visible to AI agents (invisible Unicode, HTML comments, hidden markup) in issue and pull request descriptions and comments.",
   "type": "module",

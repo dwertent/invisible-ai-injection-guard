@@ -3,6 +3,15 @@
 All notable changes to this project are documented here. This project follows
 [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] - 2026-11-15
+
+### Changed
+
+- List inputs (`trusted-bots`, `exempt-users`, `exempt-author-associations`) are written one item per line and
+  accept YAML-style `- item` lines. Commas still separate items; spaces no longer do.
+- The README's "Close flagged items" example uses
+  [close-on-labels](https://github.com/dwertent/close-on-labels).
+
 ## [1.3.0] - 2026-11-15
 
 ### Added

@@ -50,12 +50,12 @@ inputs:
     default: '200'
   trusted-bots:
     description: >-
-      Comma- or newline-separated bot logins (for example "dependabot[bot]") whose own hidden markers are allowed.
+      List of bot logins, one per line (for example "- dependabot[bot]"), whose own hidden markers are allowed.
       Their text is still scanned for anything else. Only applies when the bot wrote the text itself.
     default: ''
   exempt-users:
     description: >-
-      Comma- or newline-separated logins whose issues and pull requests are not scanned. Edits by anyone else are
+      List of logins, one per line, whose issues and pull requests are not scanned. Edits by anyone else are
       still scanned.
     default: ''
   exempt-author-associations:

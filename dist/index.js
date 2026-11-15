@@ -26432,7 +26432,7 @@ function readConfig(io) {
     if (!/^\d+$/u.test(value)) throw new ConfigError(`Input "${name}" must be a non-negative integer, got "${value}".`);
     return Number.parseInt(value, 10);
   };
-  const list = (name) => io.getInput(name).split(/[\s,]+/u).map((v) => v.trim()).filter(Boolean);
+  const list = (name) => io.getInput(name).split("\n").map((line) => line.trim().replace(/^-\s+/u, "")).flatMap((line) => line.split(",")).map((v) => v.trim()).filter(Boolean);
   const token = io.getInput("github-token").trim();
   if (token === "") throw new ConfigError('Input "github-token" is required.');
   const minSeverity = str2("min-severity", "medium").toLowerCase();

@@ -34,7 +34,8 @@ jobs:
         uses: ./
         with:
           label: suspicious-hidden-content
-          trusted-bots: dependabot[bot]
+          trusted-bots: |
+            - dependabot[bot]
       - name: Show outputs
         env:
           DETECTED: ${{ steps.guard.outputs.detected }}

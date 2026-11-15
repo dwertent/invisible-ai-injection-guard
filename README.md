@@ -109,8 +109,13 @@ Some bots write hidden markers into their own text, for example Dependabot's
 ```yaml
 - uses: dwertent/invisible-ai-injection-guard@v1
   with:
-    trusted-bots: dependabot[bot]
+    trusted-bots: |
+      - dependabot[bot]
 ```
+
+GitHub only passes strings to actions, so a YAML list (`trusted-bots: [a, b]`) is rejected by the workflow parser.
+Write the list as a block string instead, one item per line, with or without a leading `- `. The same format
+works for `exempt-users`.
 
 A trusted bot is **not** exempt from scanning:
 
@@ -126,8 +131,9 @@ Supported bots: `dependabot[bot]`.
 
 ### Close flagged items in a separate job
 
-Closing is not part of this action. To close flagged items automatically, run a second job that reads the action's
-`detected` output, so the decision to close lives in your workflow, where you can see and change it:
+Closing is not part of this action. To close flagged items automatically, add a second job that runs
+[close-on-labels](https://github.com/dwertent/close-on-labels) after the scan, so the decision to close lives in
+your workflow, where you can see and change it:
 
 ```yaml
 jobs:
@@ -153,18 +159,14 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          EVENT: ${{ github.event_name }}
-          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
-        run: |
-          if [ "$EVENT" = issues ]; then
-            gh issue close "$NUMBER" --reason "not planned"
-          else
-            gh pr close "$NUMBER"
-          fi
+      - uses: dwertent/close-on-labels@v1
+        with:
+          labels: suspicious-hidden-content
+          comment: 'Closing because this was labeled {{matched}}.'
 ```
+
+close-on-labels reads the labels from the API when it runs, so it closes the item only if the label was actually
+applied.
 
 GitHub has no token permission that allows labeling but not closing: `issues: write` and `pull-requests: write`
 cover both. Removing closing from the action means it has no code path that closes anything, but the token you give
@@ -196,26 +198,26 @@ jobs:
 
 ## Inputs
 
-| Name                         | Default                                      | Description                                                                                                      |
-| ---------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `github-token`               | `${{ github.token }}`                        | Token used to read templates, label items, and post or hide comments.                                            |
-| `add-label`                  | `true`                                       | Add a label when hidden content is detected.                                                                     |
-| `label`                      | `suspicious-hidden-content`                  | Label name. Created if it does not exist.                                                                        |
-| `label-color`                | `b60205`                                     | Hex color used when creating the label.                                                                          |
-| `label-description`          | `Contains content hidden from human readers` | Description used when creating the label.                                                                        |
-| `hide-comment`               | `true`                                       | Hide (minimize) comments that contain hidden content.                                                            |
-| `hide-comment-reason`        | `spam`                                       | Reason shown on hidden comments: `spam`, `abuse`, `off-topic`, `outdated`, `duplicate` or `resolved`.            |
-| `comment`                    | `true`                                       | Post (and keep updated) a comment that lists the findings.                                                       |
-| `show-evidence`              | `true`                                       | Include short, escaped excerpts of the hidden content in the comment.                                            |
-| `remove-label-when-clean`    | `true`                                       | Remove the label after a clean edit.                                                                             |
-| `min-severity`               | `medium`                                     | Lowest severity that triggers actions: `low`, `medium` or `high`.                                                |
-| `ignore-template-comments`   | `true`                                       | Ignore comments that also appear in the repository's (or the owner's `.github` repository's) issue/PR templates. |
-| `max-blank-lines`            | `30`                                         | Visually empty lines allowed before following content is reported as padding.                                    |
-| `max-comment-length`         | `200`                                        | HTML comments longer than this are medium instead of low severity.                                               |
-| `trusted-bots`               | _(empty)_                                    | Bots whose own hidden markers are allowed; their text is still scanned. See [Trusted bots](#trusted-bots).       |
-| `exempt-users`               | _(empty)_                                    | Comma- or newline-separated logins that are not scanned. Edits by anyone else are still scanned.                 |
-| `exempt-author-associations` | _(empty)_                                    | Author associations that are not scanned, for example `OWNER,MEMBER`. Edits by anyone else are still scanned.    |
-| `fail-on-detection`          | `false`                                      | Fail the step when hidden content is detected.                                                                   |
+| Name                         | Default                                      | Description                                                                                                       |
+| ---------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `github-token`               | `${{ github.token }}`                        | Token used to read templates, label items, and post or hide comments.                                             |
+| `add-label`                  | `true`                                       | Add a label when hidden content is detected.                                                                      |
+| `label`                      | `suspicious-hidden-content`                  | Label name. Created if it does not exist.                                                                         |
+| `label-color`                | `b60205`                                     | Hex color used when creating the label.                                                                           |
+| `label-description`          | `Contains content hidden from human readers` | Description used when creating the label.                                                                         |
+| `hide-comment`               | `true`                                       | Hide (minimize) comments that contain hidden content.                                                             |
+| `hide-comment-reason`        | `spam`                                       | Reason shown on hidden comments: `spam`, `abuse`, `off-topic`, `outdated`, `duplicate` or `resolved`.             |
+| `comment`                    | `true`                                       | Post (and keep updated) a comment that lists the findings.                                                        |
+| `show-evidence`              | `true`                                       | Include short, escaped excerpts of the hidden content in the comment.                                             |
+| `remove-label-when-clean`    | `true`                                       | Remove the label after a clean edit.                                                                              |
+| `min-severity`               | `medium`                                     | Lowest severity that triggers actions: `low`, `medium` or `high`.                                                 |
+| `ignore-template-comments`   | `true`                                       | Ignore comments that also appear in the repository's (or the owner's `.github` repository's) issue/PR templates.  |
+| `max-blank-lines`            | `30`                                         | Visually empty lines allowed before following content is reported as padding.                                     |
+| `max-comment-length`         | `200`                                        | HTML comments longer than this are medium instead of low severity.                                                |
+| `trusted-bots`               | _(empty)_                                    | Bots whose own markers are allowed, one per line; their text is still scanned. See [Trusted bots](#trusted-bots). |
+| `exempt-users`               | _(empty)_                                    | Logins that are not scanned, one per line. Edits by anyone else are still scanned.                                |
+| `exempt-author-associations` | _(empty)_                                    | Author associations that are not scanned, for example `OWNER,MEMBER`. Edits by anyone else are still scanned.     |
+| `fail-on-detection`          | `false`                                      | Fail the step when hidden content is detected.                                                                    |
 
 ## Outputs
 

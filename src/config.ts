@@ -72,10 +72,14 @@ export function readConfig(io: InputReader): Config {
     if (!/^\d+$/u.test(value)) throw new ConfigError(`Input "${name}" must be a non-negative integer, got "${value}".`)
     return Number.parseInt(value, 10)
   }
+  // Action inputs are always strings, so lists are written one item per line, optionally as YAML-style
+  // `- item` lines. Commas also separate items.
   const list = (name: string): string[] =>
     io
       .getInput(name)
-      .split(/[\s,]+/u)
+      .split('\n')
+      .map((line) => line.trim().replace(/^-\s+/u, ''))
+      .flatMap((line) => line.split(','))
       .map((v) => v.trim())
       .filter(Boolean)
 
