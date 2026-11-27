@@ -43,13 +43,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^24.19.2",
-    "@vitest/coverage-v8": "^5.1.0",
+    "@types/node": "^26.6.7",
+    "@vitest/coverage-v8": "^5.1.1",
     "esbuild": "^0.28.2",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "prettier": "^3.10.1",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.72.2",
+    "typescript": "^7.0.2",
+    "typescript-eslint": "^8.74.0",
     "vitest": "^5.1.0"
   }
 }
